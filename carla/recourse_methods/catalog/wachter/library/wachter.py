@@ -64,7 +64,7 @@ def wachter_recourse(
     -------
     Counterfactual example as np.ndarray
     """
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "mps" if torch.backends.mps.is_available() else "cpu"
     # returns counterfactual instance
     torch.manual_seed(0)
 
@@ -135,6 +135,11 @@ def wachter_recourse(
                 if feature_costs is None
                 else torch.norm(feature_costs * (x_new_enc - x), norm)
             )
+
+            f_x_loss = f_x_loss.to(device)
+            y_target = y_target.to(device)
+            cost = cost.to(device)
+            lamb = lamb.to(device)
 
             loss = loss_fn(f_x_loss, y_target) + lamb * cost
             loss.backward()

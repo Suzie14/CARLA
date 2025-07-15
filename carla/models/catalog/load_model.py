@@ -74,8 +74,8 @@ def load_online_model(
         full_path = cache_path
 
     if ext == PYTORCH_EXT:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        model = torch.load(full_path, map_location=device)
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        model = torch.load(full_path, map_location=device, weights_only=False)
     elif ext == TENSORFLOW_EXT:
         model = tf.keras.models.load_model(full_path, compile=False)
     elif ext == SKLEARN_EXT:
@@ -132,8 +132,8 @@ def load_trained_model(
     if os.path.exists(cache_path):
         # load the model
         if backend == "pytorch":
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            model = torch.load(cache_path, map_location=device)
+            device = "mps" if torch.backends.mps.is_available() else "cpu"
+            model = torch.load(cache_path, map_location=device, weights_only=False)
         elif backend == "tensorflow":
             model = tf.keras.models.load_model(cache_path, compile=False)
         elif backend == "sklearn" or backend == "xgboost":

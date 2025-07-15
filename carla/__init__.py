@@ -14,7 +14,7 @@ with open(os.path.join(lib_path, "logging.yaml"), "r") as f:
 log = logging.getLogger(__name__)
 
 from ._version import __version__
-from .data import Data, DataCatalog
+from .data import Data, DataCatalog, OnlineCatalog
 from .evaluation import Benchmark
 from .models import MLModel, MLModelCatalog
 from .recourse_methods import RecourseMethod

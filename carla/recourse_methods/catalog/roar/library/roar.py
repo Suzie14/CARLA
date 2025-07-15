@@ -65,7 +65,7 @@ def roar_recourse(
     torch_model,
     x: np.ndarray,
     coeff: np.ndarray,
-    intercept: np.float,
+    intercept: np.float64,
     cat_feature_indices: List[int],
     binary_cat_features: bool = True,
     feature_costs: Optional[List[float]] = None,

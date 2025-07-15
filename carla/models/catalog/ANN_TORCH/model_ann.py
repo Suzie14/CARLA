@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 
+device = "mps" if torch.backends.mps.is_available() else "cpu"
 
 class AnnModel(nn.Module):
     def __init__(self, input_layer, hidden_layers, num_of_classes):
@@ -48,6 +49,7 @@ class AnnModel(nn.Module):
         -------
         prediction
         """
+        x = x.to(next(self.parameters()).device)
         for i, l in enumerate(self.layers):
             x = l(x)
             if i < len(self.layers) - 1:

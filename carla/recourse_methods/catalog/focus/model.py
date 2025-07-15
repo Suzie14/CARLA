@@ -9,7 +9,6 @@ from typing import Dict, Optional
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import tensorflow.contrib.eager as tfe
 from sklearn.tree import DecisionTreeClassifier
 
 from carla.models.api import MLModel
@@ -246,7 +245,7 @@ class FOCUS(RecourseMethod):
         # Little bit hacky, but needed as other tf code is graph based.
         # Graph based tf and eager execution for tf don't work together nicely.
         with tf.compat.v1.Session() as sess:
-            pf = tfe.py_func(f, [best_perturb], tf.float32)
+            pf = tf.py_func(f, [best_perturb], tf.float32)
             best_perturb = sess.run(pf)
 
         df_cfs = pd.DataFrame(best_perturb, columns=self.model.data.continuous)
