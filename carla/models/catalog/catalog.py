@@ -259,7 +259,10 @@ class MLModelCatalog(MLModel):
             # If the input was a tensor, return a tensor. Else return a np array.
             tensor_output = torch.is_tensor(x)
             if not tensor_output:
-                _x = torch.Tensor(_x)
+                if isinstance(_x, np.ndarray):
+                    _x = pd.DataFrame(_x)
+                _x = _x.astype(float).to_numpy()  
+                _x = torch.from_numpy(_x).float()
 
             # input, tensor_output = (
             #     (torch.Tensor(x), False) if not torch.is_tensor(x) else (x, True)

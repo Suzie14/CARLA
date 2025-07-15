@@ -164,7 +164,7 @@ class CCHVAE(RecourseMethod):
     def _counterfactual_search(
         self, step: int, factual: torch.Tensor, cat_features_indices: List
     ) -> pd.DataFrame:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        device = "mps" if torch.backends.mps.is_available() else "cpu"
 
         # init step size for growing the sphere
         low = 0
