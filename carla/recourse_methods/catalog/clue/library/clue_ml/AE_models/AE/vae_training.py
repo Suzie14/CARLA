@@ -9,6 +9,9 @@ from carla.recourse_methods.catalog.clue.library.clue_ml.AE_models.AE.train impo
     train_VAE,
 )
 from carla.recourse_methods.catalog.clue.library.clue_ml.src.utils import Datafeed
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
 
 def training(

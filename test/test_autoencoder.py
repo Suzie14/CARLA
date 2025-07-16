@@ -12,9 +12,18 @@ from carla.recourse_methods.autoencoder import (
     train_autoencoder,
 )
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
 
 def test_cs_vae():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.backends.mps.is_available():
+        device = "mps"  
+    elif torch.cuda.is_available():
+        device = "cuda:0"
+    else: 
+        device = "cpu"
 
     # Build data and mlmodel
     data_name = "adult"
@@ -50,7 +59,12 @@ def test_variational_autoencoder():
 
     model = MLModelCatalog(data, "ann", backend="pytorch")
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.backends.mps.is_available():
+        device = "mps"  
+    elif torch.cuda.is_available():
+        device = "cuda:0"
+    else: 
+        device = "cpu"
     test_input = np.zeros((1, 13))
     test_input = torch.Tensor(test_input).to(device)
 
@@ -79,7 +93,12 @@ def test_variational_autoencoder_length():
 
     model = MLModelCatalog(data, "ann", backend="pytorch")
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.backends.mps.is_available():
+        device = "mps"  
+    elif torch.cuda.is_available():
+        device = "cuda:0"
+    else: 
+        device = "cpu"
     test_input = np.zeros((1, 13))
     test_input = torch.Tensor(test_input).to(device)
 

@@ -13,6 +13,12 @@ from .load_model import load_online_model, load_trained_model, save_model
 from .train_model import train_model
 
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
+
+
 class MLModelCatalog(MLModel):
     """
     Use pretrained classifier.
@@ -246,7 +252,12 @@ class MLModelCatalog(MLModel):
         if self._backend == "pytorch":
 
             # Keep model and input on the same device
-            device = "cuda" if torch.cuda.is_available() else "cpu"
+            if torch.backends.mps.is_available():
+                device = "mps"  
+            elif torch.cuda.is_available():
+                device = "cuda:0"
+            else: 
+                device = "cpu"
             self._model = self._model.to(device)
 
             if isinstance(x, pd.DataFrame):

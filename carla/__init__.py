@@ -18,6 +18,7 @@ from .data import Data, DataCatalog, OnlineCatalog
 from .evaluation import Benchmark
 from .models import MLModel, MLModelCatalog
 from .recourse_methods import RecourseMethod
+from .gpu import GPU_N
 
 
 def get_logger(logger: str):

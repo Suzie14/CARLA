@@ -12,6 +12,11 @@ from carla.recourse_methods.autoencoder.save_load import get_home
 
 tf.compat.v1.disable_eager_execution()
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
+
 
 class VariationalAutoencoder(nn.Module):
     def __init__(self, data_name: str, layers: List, mutable_mask):
@@ -63,7 +68,14 @@ class VariationalAutoencoder(nn.Module):
             nn.Sigmoid(),
         )
 
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
+
+        self.device = device
         self.to(self.device)
 
         self.mutable_mask = mutable_mask

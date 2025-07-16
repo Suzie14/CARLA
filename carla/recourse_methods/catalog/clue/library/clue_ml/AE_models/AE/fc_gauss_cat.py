@@ -19,6 +19,9 @@ from carla.recourse_methods.catalog.clue.library.clue_ml.src.utils import (
 from .models import MLP_preact_generator_net, MLP_preact_recognition_net
 
 # TODO: implement for std changeable gaussian instead of rms
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
 
 class VAE_gauss_cat(nn.Module):
@@ -93,13 +96,13 @@ class VAE_gauss_cat_net(BaseNet):
         latent_dim,
         pred_sig=False,
         lr=1e-3,
-        cuda=True,
+        device="cuda",
         flatten=True,
     ):
         super(VAE_gauss_cat_net, self).__init__()
         log.info("VAE_gauss_net")
 
-        self.cuda = cuda
+        self.device = device
         self.input_dim = 0
         self.input_dim_vec = input_dim_vec
         for e in self.input_dim_vec:
@@ -119,14 +122,9 @@ class VAE_gauss_cat_net(BaseNet):
         self.epoch = 0
         self.schedule = None
 
-        if self.cuda:
-            self.prior = self.prior = Normal(
-                loc=torch.zeros(latent_dim).cuda(), scale=torch.ones(latent_dim).cuda()
-            )
-        else:
-            self.prior = Normal(
-                loc=torch.zeros(latent_dim), scale=torch.ones(latent_dim)
-            )
+        self.prior = Normal(
+            loc=torch.zeros(latent_dim, device=self.device), 
+            scale=torch.ones(latent_dim, device=self.device))
         self.vlb_scale = 1 / len(
             self.input_dim_vec
         )  # scale for dimensions of input so we can use same LR always

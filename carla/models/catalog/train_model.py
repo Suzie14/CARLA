@@ -13,6 +13,10 @@ from carla.models.catalog.ANN_TORCH import AnnModel as ann_torch
 from carla.models.catalog.Linear_TF import LinearModel
 from carla.models.catalog.Linear_TF import LinearModel as linear_tf
 from carla.models.catalog.Linear_TORCH import LinearModel as linear_torch
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
 
 
 def train_model(
@@ -160,7 +164,12 @@ def train_model(
 class DataFrameDataset(Dataset):
     def __init__(self, x: pd.DataFrame, y: pd.DataFrame):
         # PyTorch
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
         self.X_train = torch.tensor(x.to_numpy(), dtype=torch.float32).to(device)
         self.Y_train = torch.tensor(y.to_numpy()).to(device)
 
@@ -181,7 +190,12 @@ def _training_torch(
     loaders = {"train": train_loader, "test": test_loader}
 
     # Use GPU is available
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if torch.backends.mps.is_available():
+        device = "mps"  
+    elif torch.cuda.is_available():
+        device = "cuda:0"
+    else: 
+        device = "cpu"
     model = model.to(device)
 
     # define the loss

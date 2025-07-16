@@ -10,6 +10,10 @@ from carla.models.api import MLModel
 from carla.recourse_methods.autoencoder import CSVAE
 from carla.recourse_methods.processing import reconstruct_encoding_constraints
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
 
 def compute_loss(cf_initialize, query_instance, target, i, lambda_param, mlmodel):
     loss_function = nn.BCELoss()
@@ -32,7 +36,12 @@ def counterfactual_search(
     lr: float = 0.008,
     max_iter: int = 2000,
 ) -> np.ndarray:
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.backends.mps.is_available():
+        device = "mps"  
+    elif torch.cuda.is_available():
+        device = "cuda:0"
+    else: 
+        device = "cpu"
     if target_class is None:
         target_class = [0, 1]
 

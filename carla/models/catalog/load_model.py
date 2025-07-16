@@ -7,6 +7,11 @@ import joblib
 import tensorflow as tf
 import torch
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
+
 PYTORCH_EXT = "pt"
 TENSORFLOW_EXT = "h5"
 SKLEARN_EXT = "skjoblib"
@@ -74,7 +79,12 @@ def load_online_model(
         full_path = cache_path
 
     if ext == PYTORCH_EXT:
-        device = "mps" if torch.backends.mps.is_available() else "cpu"
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
         model = torch.load(full_path, map_location=device, weights_only=False)
     elif ext == TENSORFLOW_EXT:
         model = tf.keras.models.load_model(full_path, compile=False)
@@ -132,7 +142,12 @@ def load_trained_model(
     if os.path.exists(cache_path):
         # load the model
         if backend == "pytorch":
-            device = "mps" if torch.backends.mps.is_available() else "cpu"
+            if torch.backends.mps.is_available():
+                device = "mps"  
+            elif torch.cuda.is_available():
+                device = "cuda:0"
+            else: 
+                device = "cpu"
             model = torch.load(cache_path, map_location=device, weights_only=False)
         elif backend == "tensorflow":
             model = tf.keras.models.load_model(cache_path, compile=False)

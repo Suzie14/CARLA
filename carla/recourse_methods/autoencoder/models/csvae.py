@@ -16,6 +16,11 @@ from carla.recourse_methods.autoencoder.save_load import get_home
 
 tf.compat.v1.disable_eager_execution()
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
+
 
 class CSVAE(nn.Module):
     def __init__(self, data_name: str, layers: List[int], mutable_mask) -> None:
@@ -99,7 +104,12 @@ class CSVAE(nn.Module):
         lst_decoder_z_to_y.append(nn.Sigmoid())
         self.decoder_z_to_y = nn.Sequential(*lst_decoder_z_to_y)
 
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+        if torch.backends.mps.is_available():
+                device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
         self.device = device
         self.to(device)
 

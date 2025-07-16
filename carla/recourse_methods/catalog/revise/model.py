@@ -16,6 +16,10 @@ from carla.recourse_methods.processing.counterfactuals import (
     reconstruct_encoding_constraints,
 )
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
 
 class Revise(RecourseMethod):
     """
@@ -135,8 +139,12 @@ class Revise(RecourseMethod):
                 )
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
         factuals = self._mlmodel.get_ordered_features(factuals)
 
         # pay attention to categorical features

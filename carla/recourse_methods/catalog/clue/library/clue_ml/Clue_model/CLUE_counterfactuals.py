@@ -16,6 +16,9 @@ Here we conduct the search for counterfactual explanations using CLUE.
 We downloaded the CLUE method and its helpers from openreview:
 have a look at: https://openreview.net/forum?id=XSLF1XFq5h for more details
 """
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
 
 def vae_gradient_search(
@@ -158,7 +161,7 @@ class CLUE(BaseNet):
         flatten_BNN=False,
         regression=False,
         prob_BNN=True,
-        cuda=False,
+        device="cpu",
     ):
 
         """Option specification:
@@ -187,15 +190,18 @@ class CLUE(BaseNet):
 
         self.prob_BNN = prob_BNN
         # self.cuda = cuda
-        self.cuda = torch.cuda.is_available()
-        if self.cuda:
-            self.original_x = self.original_x.cuda()
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
+        self.device = device
+        self.original_x = self.original_x.to(self.device)
             # self.z_init = self.z_init.cuda()
-            if self.desired_preds is not None:
-                # self.desired_preds = self.desired_preds.cuda()
-                self.desired_preds = torch.from_numpy(self.desired_preds).cuda()
-        else:
-            self.desired_preds = torch.from_numpy(self.desired_preds)
+        if self.desired_preds is not None:
+            # self.desired_preds = self.desired_preds.cuda()
+            self.desired_preds = torch.from_numpy(self.desired_preds).to(device)
 
         self.cond_mask = cond_mask
 
@@ -208,8 +214,7 @@ class CLUE(BaseNet):
             self.z_dim = VAE.latent_dim
             if z_init is not None:
                 self.z_init = torch.Tensor(z_init)
-                if cuda:
-                    self.z_init = self.z_init.cuda()
+                self.z_init = self.z_init.to(device)
                 self.z = nn.Parameter(self.z_init)
                 self.trainable_params.append(self.z)
             else:

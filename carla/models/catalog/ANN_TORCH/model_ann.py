@@ -1,8 +1,18 @@
 import numpy as np
 import torch
 from torch import nn
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
-device = "mps" if torch.backends.mps.is_available() else "cpu"
+
+if torch.backends.mps.is_available():
+    device = "mps"  
+elif torch.cuda.is_available():
+    device = "cuda:0"
+else: 
+    device = "cpu"
+
 
 class AnnModel(nn.Module):
     def __init__(self, input_layer, hidden_layers, num_of_classes):

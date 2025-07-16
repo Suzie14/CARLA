@@ -11,6 +11,10 @@ from torch.autograd import Variable, grad
 from carla import log
 from carla.recourse_methods.processing import reconstruct_encoding_constraints
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
+
 
 def _calc_max_perturbation(
     recourse: torch.Tensor,
@@ -121,7 +125,7 @@ def roar_recourse(
     -------
     Counterfactual example as np.ndarray
     """
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch._available() else "cpu"
     torch.manual_seed(seed)
 
     if feature_costs is not None:

@@ -16,6 +16,9 @@ from carla.recourse_methods.catalog.clue.library import (
 from carla.recourse_methods.processing import check_counterfactuals
 from carla.recourse_methods.processing.counterfactuals import merge_default_parameters
 
+import os
+from carla.gpu import GPU_N
+os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
 class Clue(RecourseMethod):
     """
@@ -143,7 +146,12 @@ class Clue(RecourseMethod):
 
         # Authors say: 'For automatic explainer generation'
         flat_vae_bools = False
-        cuda = torch.cuda.is_available()
+        if torch.backends.mps.is_available():
+            device = "mps"  
+        elif torch.cuda.is_available():
+            device = "cuda:0"
+        else: 
+            device = "cpu"
         vae = VAE_gauss_cat_net(
             self._input_dimension,
             self._width,
@@ -151,10 +159,10 @@ class Clue(RecourseMethod):
             self._latent_dim,
             pred_sig=False,
             lr=self._lr,
-            cuda=cuda,
+            device=device,
             flatten=flat_vae_bools,
         )
-
+        vae.to(device)
         vae.load(os.path.join(path, "theta_best.dat"))
 
         return vae
