@@ -154,7 +154,7 @@ class VariationalAutoencoder(nn.Module):
             # Train for all the batches
             for data in train_loader:
                 data = data.view(data.shape[0], -1)
-                data = data.to(self.device).float()
+                data = data.to(self.device, dtype=torch.float32)
 
                 # forward pass
                 reconstruction, mu, log_var = self(data)

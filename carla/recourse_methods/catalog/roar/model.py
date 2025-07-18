@@ -185,7 +185,7 @@ class Roar(RecourseMethod):
         factuals = factuals.reset_index()
         factuals = self._mlmodel.get_ordered_features(factuals)
 
-        encoded_feature_names = self._mlmodel.data.encoder.get_feature_names(
+        encoded_feature_names = self._mlmodel.data.encoder.get_feature_names_out(
             self._mlmodel.data.categorical
         )
         cat_features_indices = [

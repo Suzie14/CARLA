@@ -104,7 +104,7 @@ class MLModelCatalog(MLModel):
                 encoded_features = data.categorical
             else:
                 encoded_features = list(
-                    data.encoder.get_feature_names(data.categorical)
+                    data.encoder.get_feature_names_out(data.categorical)
                 )
 
             self._catalog = None
@@ -273,13 +273,13 @@ class MLModelCatalog(MLModel):
                 if isinstance(_x, np.ndarray):
                     _x = pd.DataFrame(_x)
                 _x = _x.astype(float).to_numpy()  
-                _x = torch.from_numpy(_x).float()
+                _x = torch.from_numpy(_x)
 
             # input, tensor_output = (
             #     (torch.Tensor(x), False) if not torch.is_tensor(x) else (x, True)
             # )
 
-            _x = _x.to(device)
+            _x = _x.to(device, dtype=torch.float32)
             output = self._model(_x)
 
             if tensor_output:

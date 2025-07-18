@@ -96,6 +96,13 @@ class CCHVAE(RecourseMethod):
     }
 
     def __init__(self, mlmodel: MLModel, hyperparams: Dict = None) -> None:
+        mutable_mask = mlmodel.get_mutable_mask()
+        input_dim = int(np.sum(mutable_mask))
+        latent_dim = 12   
+        hidden_dim = max(8, input_dim // 2)  
+
+        vae_layers = [input_dim, hidden_dim, latent_dim]
+        self._DEFAULT_HYPERPARAMS["vae_params"]["layers"]=vae_layers
 
         supported_backends = ["pytorch"]
         if mlmodel.backend not in supported_backends:
@@ -104,6 +111,7 @@ class CCHVAE(RecourseMethod):
             )
 
         super().__init__(mlmodel)
+        print(self._DEFAULT_HYPERPARAMS)
         self._params = merge_default_parameters(hyperparams, self._DEFAULT_HYPERPARAMS)
 
         self._n_search_samples = self._params["n_search_samples"]
@@ -215,13 +223,13 @@ class CCHVAE(RecourseMethod):
             # STEP 1 -- SAMPLE POINTS on hyper sphere around instance
             latent_neighbourhood, _ = self._hyper_sphere_coordindates(z_rep, high, low)
             torch_latent_neighbourhood = (
-                torch.from_numpy(latent_neighbourhood).to(device).float()
+                torch.from_numpy(latent_neighbourhood).to(device, dtype=torch.float32)
             )
             x_ce = self._generative_model.decode(torch_latent_neighbourhood)
 
             # add the immutable features to the reconstruction
             temp = fact_rep.clone()
-            temp[:, self._generative_model.mutable_mask] = x_ce.double()
+            temp[:, self._generative_model.mutable_mask] = x_ce.to(dtype=torch.float32)
             x_ce = temp
 
             x_ce = reconstruct_encoding_constraints(
@@ -264,7 +272,7 @@ class CCHVAE(RecourseMethod):
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
         factuals = self._mlmodel.get_ordered_features(factuals)
 
-        encoded_feature_names = self._mlmodel.data.encoder.get_feature_names(
+        encoded_feature_names = self._mlmodel.data.encoder.get_feature_names_out(
             self._mlmodel.data.categorical
         )
         cat_features_indices = [
@@ -273,7 +281,7 @@ class CCHVAE(RecourseMethod):
 
         df_cfs = factuals.apply(
             lambda x: self._counterfactual_search(
-                self._step, x.reshape((1, -1)), cat_features_indices
+                self._step, x.astype(np.float32).reshape((1, -1)), cat_features_indices
             ),
             raw=True,
             axis=1,
