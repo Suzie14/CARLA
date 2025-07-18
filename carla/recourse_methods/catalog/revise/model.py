@@ -99,6 +99,13 @@ class Revise(RecourseMethod):
     }
 
     def __init__(self, mlmodel: MLModel, data: Data, hyperparams: Dict = None) -> None:
+        mutable_mask = mlmodel.get_mutable_mask()
+        input_dim = int(np.sum(mutable_mask))
+        latent_dim = 12   
+        hidden_dim = max(8, input_dim // 2)  
+        
+        vae_layers = [input_dim, hidden_dim, latent_dim]
+        self._DEFAULT_HYPERPARAMS["vae_params"]["layers"]=vae_layers
 
         supported_backends = ["pytorch"]
         if mlmodel.backend not in supported_backends:
