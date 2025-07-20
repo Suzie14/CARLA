@@ -57,12 +57,12 @@ def constraint_violation(
     categorical features
     """
     # check categorical by boolean comparison
-    cfs_categorical_immutable = df_decoded_cfs[
-        _intersection(data.categorical, data.immutables)
-    ]
-    factual_categorical_immutable = df_factuals[
-        _intersection(data.categorical, data.immutables)
-    ]
+    cols = _intersection(data.categorical, data.immutables)
+    cfs_categorical_immutable = df_decoded_cfs[cols]
+    factual_categorical_immutable = df_factuals[cols]
+
+    factual_categorical_immutable = factual_categorical_immutable.reindex(cfs_categorical_immutable.index)
+
 
     categorical_violations = cfs_categorical_immutable != factual_categorical_immutable
     categorical_violations = np.sum(categorical_violations.values, axis=1).reshape(

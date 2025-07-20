@@ -111,7 +111,6 @@ class CCHVAE(RecourseMethod):
             )
 
         super().__init__(mlmodel)
-        print(self._DEFAULT_HYPERPARAMS)
         self._params = merge_default_parameters(hyperparams, self._DEFAULT_HYPERPARAMS)
 
         self._n_search_samples = self._params["n_search_samples"]
