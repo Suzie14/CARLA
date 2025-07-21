@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 import pandas as pd
@@ -12,14 +12,16 @@ class Redundancy(Evaluation):
     Computes redundancy for each counterfactual
     """
 
-    def __init__(self, mlmodel, hyperparameters):
+    def __init__(self, mlmodel, hyperparameters: Dict = {}):
         super().__init__(mlmodel, hyperparameters)
-        self.cf_label = self.hyperparameters["cf_label"]
         self.columns = ["Redundancy"]
 
     def _compute_redundancy(
         self, factual: np.ndarray, counterfactual: np.ndarray
     ) -> int:
+        self.cf_label = np.argmax(
+            self.mlmodel.predict_proba(counterfactual.reshape((1, -1)))
+        )
         redundancy = 0
         for col_idx in range(len(counterfactual)):
             # if feature is changed

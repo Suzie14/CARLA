@@ -1,3 +1,5 @@
+from typing import Dict
+
 import numpy as np
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
@@ -20,10 +22,9 @@ class YNN(Evaluation):
             What class to use as a target.
     """
 
-    def __init__(self, mlmodel, hyperparameters):
+    def __init__(self, mlmodel, hyperparameters: Dict = {"y":5}):
         super().__init__(mlmodel, hyperparameters)
         self.y = self.hyperparameters["y"]
-        self.cf_label = self.hyperparameters["cf_label"]
         self.columns = ["y-Nearest-Neighbours"]
 
     def _ynn(self, counterfactuals):
@@ -35,6 +36,8 @@ class YNN(Evaluation):
         for i, row in counterfactuals.iterrows():
             if np.any(row.isna()):
                 raise ValueError(f"row {i} did not contain a valid counterfactual")
+            
+            self.cf_label = np.argmax(self.mlmodel.predict_proba(row.values.reshape((1, -1))))
 
             knn = nbrs.kneighbors(
                 row.values.reshape((1, -1)), self.y, return_distance=False
