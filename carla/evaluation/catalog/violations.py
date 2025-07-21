@@ -94,4 +94,6 @@ class ConstraintViolation(Evaluation):
                 self.mlmodel.data, counterfactuals_without_nans, factual_without_nans
             )
 
-        return pd.DataFrame(violations, columns=self.columns)
+        viol = np.mean([v[0] for v in violations])
+
+        return pd.DataFrame([[viol]], columns=self.columns)

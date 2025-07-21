@@ -77,5 +77,8 @@ class Redundancy(Evaluation):
                 factual_without_nans,
                 counterfactuals_without_nans,
             )
+        
+        red = np.mean([r[0] for r in redundancies])
+        
 
-        return pd.DataFrame(redundancies, columns=self.columns)
+        return pd.DataFrame([[red]], columns=self.columns)

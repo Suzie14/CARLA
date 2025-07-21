@@ -143,7 +143,9 @@ def _get_distances(
     d3 = l2_distance(delta)
     d4 = linf_distance(delta)
 
-    return [[d1[i], d2[i], d3[i], d4[i]] for i in range(len(d1))]
+    #return [[d1[i], d2[i], d3[i], d4[i]] for i in range(len(d1))]
+
+    return [[np.mean(d1), np.mean(d2), np.mean(d3), np.mean(d4)]]
 
 
 class Distance(Evaluation):
