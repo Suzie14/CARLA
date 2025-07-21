@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 
 from carla.models.api import MLModel
 from carla.recourse_methods.api import RecourseMethod
@@ -59,8 +60,10 @@ class GrowingSpheres(RecourseMethod):
         self._categorical_enc = encode_feature_names(
             self._mlmodel.data.categorical, self._mlmodel.feature_input_order
         )
+        self.time = None
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
 
         factuals = self._mlmodel.get_ordered_features(factuals)
 
@@ -79,4 +82,6 @@ class GrowingSpheres(RecourseMethod):
 
         df_cfs = check_counterfactuals(self._mlmodel, list_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

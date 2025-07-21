@@ -5,6 +5,7 @@ https://github.com/upura/featureTweakPy
 
 import copy
 from typing import Dict, List, Optional
+import time
 
 import numpy as np
 import pandas as pd
@@ -265,6 +266,8 @@ class FeatureTweak(RecourseMethod):
         self.target_col = self.data.target
         self.cost_func = cost_func
 
+        self.time = None
+
     def esatisfactory_instance(self, x: np.ndarray, path_info):
         """
         return the epsilon satisfactory instance of x.
@@ -365,6 +368,7 @@ class FeatureTweak(RecourseMethod):
         return x_out
 
     def get_counterfactuals(self, factuals: pd.DataFrame):
+        start_time = time.time()
 
         # drop targets
         instances = factuals.copy()
@@ -387,4 +391,6 @@ class FeatureTweak(RecourseMethod):
             self._mlmodel, counterfactuals, factuals.index
         )
         counterfactuals_df = self._mlmodel.get_ordered_features(counterfactuals_df)
+        end_time = time.time()
+        self.time = end_time - start_time
         return counterfactuals_df

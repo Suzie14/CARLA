@@ -5,6 +5,7 @@ https://github.com/a-lucic/focus
 """
 
 from typing import Dict, Optional
+import time
 
 import numpy as np
 import pandas as pd
@@ -148,7 +149,10 @@ class FOCUS(RecourseMethod):
         self.distance_weight_val = checked_hyperparams["distance_weight"]
         self.distance_function = checked_hyperparams["distance_func"]
 
+        self.time = None
+
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
 
         best_perturb = np.array([])
 
@@ -251,6 +255,8 @@ class FOCUS(RecourseMethod):
         df_cfs = pd.DataFrame(best_perturb, columns=self.model.data.continuous)
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs
 
     def _prob_from_input(self, perturbed, sigma, temperature):

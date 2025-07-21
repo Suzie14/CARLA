@@ -1,4 +1,5 @@
 from typing import Dict
+import time
 
 import pandas as pd
 
@@ -127,8 +128,12 @@ class CRUD(RecourseMethod):
                 raise FileNotFoundError(
                     "Loading of Autoencoder failed. {}".format(str(exc))
                 )
+        
+        self.time = None
 
     def get_counterfactuals(self, factuals: pd.DataFrame):
+
+        start_time = time.time()
 
         factuals = pd.concat(
             [
@@ -169,4 +174,6 @@ class CRUD(RecourseMethod):
             factuals.index,
         )
         cf_df = self._mlmodel.get_ordered_features(cf_df)
+        end_time = time.time()
+        self.time = end_time - start_time
         return cf_df

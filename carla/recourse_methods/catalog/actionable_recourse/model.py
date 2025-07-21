@@ -1,4 +1,5 @@
 from typing import Dict, Optional, Tuple
+import time 
 
 import numpy as np
 import pandas as pd
@@ -109,6 +110,8 @@ class ActionableRecourse(RecourseMethod):
 
         self._coeffs, self._intercepts = coeffs, intercepts
 
+        self.time = None
+
     @property
     def action_set(self):
         """
@@ -177,6 +180,7 @@ class ActionableRecourse(RecourseMethod):
         return coeffs, np.array(intercepts)
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
         cfs = []
         coeffs = self._coeffs
         intercepts = self._intercepts
@@ -263,4 +267,7 @@ class ActionableRecourse(RecourseMethod):
 
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

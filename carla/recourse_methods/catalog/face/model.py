@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+import time 
 
 import pandas as pd
 
@@ -65,6 +66,8 @@ class Face(RecourseMethod):
             self._mlmodel.data.immutables, self._mlmodel.feature_input_order
         )
 
+        self.time = None
+
     @property
     def fraction(self) -> float:
         """
@@ -104,6 +107,7 @@ class Face(RecourseMethod):
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
         # >drop< factuals from dataset to prevent duplicates,
         # >reorder< and >add< factuals to top; necessary in order to use the index
+        start_time = time.time()
         df = self._mlmodel.data.df.copy()
         cond = df.isin(factuals).values
         df = df.drop(df[cond].index)
@@ -126,4 +130,6 @@ class Face(RecourseMethod):
 
         df_cfs = check_counterfactuals(self._mlmodel, list_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

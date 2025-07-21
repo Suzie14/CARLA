@@ -1,5 +1,6 @@
 import os
 from typing import Dict
+import time
 
 import numpy as np
 import pandas as pd
@@ -118,6 +119,8 @@ class Clue(RecourseMethod):
         # load autoencoder
         self._vae = self._load_vae()
 
+        self.time = None
+
     def _load_vae(self):
         # save_path
         path = os.environ.get(
@@ -192,6 +195,7 @@ class Clue(RecourseMethod):
         )
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
 
         factuals = self._mlmodel.get_ordered_features(factuals)
 
@@ -204,4 +208,6 @@ class Clue(RecourseMethod):
         # Convert output into correct format
         df_cfs = check_counterfactuals(self._mlmodel, list_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

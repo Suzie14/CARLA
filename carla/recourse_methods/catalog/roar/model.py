@@ -1,4 +1,5 @@
 from typing import Dict, Optional, Tuple
+import time
 
 import numpy as np
 import pandas as pd
@@ -126,6 +127,8 @@ class Roar(RecourseMethod):
         self._lime_seed = checked_hyperparams["lime_seed"]
         self._seed = checked_hyperparams["seed"]
 
+        self.time = None
+
     def _get_lime_coefficients(
         self, factuals: pd.DataFrame
     ) -> Tuple[np.ndarray, np.ndarray]:
@@ -182,6 +185,7 @@ class Roar(RecourseMethod):
         return coeffs, np.array(intercepts)
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
         factuals = factuals.reset_index()
         factuals = self._mlmodel.get_ordered_features(factuals)
 
@@ -277,5 +281,6 @@ class Roar(RecourseMethod):
         df_cfs = pd.DataFrame(cfs, columns=self._mlmodel.feature_input_order)
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
-
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

@@ -20,6 +20,7 @@
 # limitations under the License.
 
 from typing import Dict, Tuple, Union
+import time
 
 import numpy as np
 import pandas as pd
@@ -224,6 +225,8 @@ class CEM(RecourseMethod):
         self._init = tf.variables_initializer(
             var_list=[self._global_step] + [self._adv_s] + [self._adv] + new_vars
         )
+
+        self.time = None
 
     def _optimization(self, Loss_ToOptimize_s, adv_s, learning_rate):
         optimizer = tf.train.GradientDescentOptimizer(learning_rate)
@@ -546,6 +549,7 @@ class CEM(RecourseMethod):
         -------
 
         """
+        start_time = time.time()
         # normalize and one-hot-encoding
         factuals = factuals.reset_index(drop=True)
         factuals = self._mlmodel.get_ordered_features(factuals)
@@ -557,4 +561,6 @@ class CEM(RecourseMethod):
 
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs

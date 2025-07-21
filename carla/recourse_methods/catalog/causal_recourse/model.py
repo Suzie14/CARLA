@@ -1,5 +1,6 @@
 import itertools
 from typing import Dict
+import time
 
 import numpy as np
 import pandas as pd
@@ -112,6 +113,8 @@ class CausalRecourse(RecourseMethod):
         self._constraint_handle = checked_hyperparams["constraint_handle"]
         self._sampler_handle = checked_hyperparams["sampler_handle"]
 
+        self.time = None
+
     def get_intervenable_nodes(self) -> dict:
         intervenable_nodes = {
             "continuous": np.setdiff1d(
@@ -190,6 +193,9 @@ class CausalRecourse(RecourseMethod):
         return min_action_set, min_cost
 
     def get_counterfactuals(self, factuals: pd.DataFrame):
+
+        start_time = time.time()
+
         factual_df = factuals.drop(columns=self._dataset.target)
 
         cfs = []
@@ -206,4 +212,6 @@ class CausalRecourse(RecourseMethod):
         # convert to dataframe
         cfs = pd.DataFrame(cfs)
         # action_df = pd.DataFrame(actions)
+        end_time = time.time()
+        self.time = end_time - start_time
         return cfs

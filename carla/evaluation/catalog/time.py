@@ -1,6 +1,8 @@
 import pandas as pd
+from typing import Dict
 
 from carla.evaluation.api import Evaluation
+from carla.recourse_methods.api import RecourseMethod
 
 
 class AvgTime(Evaluation):
@@ -8,7 +10,8 @@ class AvgTime(Evaluation):
     Computes average time for generated counterfactual
     """
 
-    def __init__(self, hyperparameters):
+    def __init__(self, recourse_method:RecourseMethod, hyperparameters: Dict={}):
+        hyperparameters["time"] = recourse_method.time
         super().__init__(hyperparameters)
         self.time = hyperparameters["time"]
         self.columns = ["avg_time"]

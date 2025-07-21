@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+import time 
 
 import dice_ml
 import pandas as pd
@@ -80,7 +81,11 @@ class Dice(RecourseMethod):
         self._desired_class = checked_hyperparams["desired_class"]
         self._post_hoc_sparsity_param = checked_hyperparams["posthoc_sparsity_param"]
 
+        self.time = None
+
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time() 
+
         # Prepare factuals
         querry_instances = factuals.copy()
         querry_instances = self._model.get_ordered_features(querry_instances)
@@ -101,4 +106,8 @@ class Dice(RecourseMethod):
         df_cfs = pd.concat([cf.final_cfs_df for cf in list_cfs], ignore_index=True)
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+
+        end_time = time.time()
+
+        self.time = end_time - start_time
         return df_cfs

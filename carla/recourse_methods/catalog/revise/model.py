@@ -1,4 +1,5 @@
 from typing import Dict
+import time
 
 import numpy as np
 import pandas as pd
@@ -144,8 +145,11 @@ class Revise(RecourseMethod):
                 raise FileNotFoundError(
                     "Loading of Autoencoder failed. {}".format(str(exc))
                 )
+        
+        self.time = None
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
         if torch.backends.mps.is_available():
             device = "mps"  
         elif torch.cuda.is_available():
@@ -168,6 +172,8 @@ class Revise(RecourseMethod):
 
         cf_df = check_counterfactuals(self._mlmodel, list_cfs, factuals.index)
         cf_df = self._mlmodel.get_ordered_features(cf_df)
+        end_time = time.time()
+        self.time = end_time - start_time
         return cf_df
 
     def _counterfactual_optimization(self, cat_features_indices, device, df_fact):

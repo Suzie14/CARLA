@@ -1,4 +1,5 @@
 from typing import Dict, List, Tuple, Union
+import time
 
 import numpy as np
 import pandas as pd
@@ -123,6 +124,8 @@ class CCHVAE(RecourseMethod):
         self._generative_model = self._load_vae(
             self._mlmodel.data.df, vae_params, self._mlmodel, self._params["data_name"]
         )
+
+        self.time = None 
 
     def _load_vae(
         self, data: pd.DataFrame, vae_params: Dict, mlmodel: MLModel, data_name: str
@@ -269,6 +272,7 @@ class CCHVAE(RecourseMethod):
                 return candidate_counterfactuals[min_index]
 
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
+        start_time = time.time()
         factuals = self._mlmodel.get_ordered_features(factuals)
 
         encoded_feature_names = self._mlmodel.data.encoder.get_feature_names_out(
@@ -288,4 +292,6 @@ class CCHVAE(RecourseMethod):
 
         df_cfs = check_counterfactuals(self._mlmodel, df_cfs, factuals.index)
         df_cfs = self._mlmodel.get_ordered_features(df_cfs)
+        end_time = time.time()
+        self.time = end_time - start_time
         return df_cfs
