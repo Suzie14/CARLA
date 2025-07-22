@@ -80,11 +80,11 @@ def load_online_model(
 
     if ext == PYTORCH_EXT:
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
         model = torch.load(full_path, map_location=device, weights_only=False)
     elif ext == TENSORFLOW_EXT:
         model = tf.keras.models.load_model(full_path, compile=False)
@@ -143,11 +143,11 @@ def load_trained_model(
         # load the model
         if backend == "pytorch":
             if torch.backends.mps.is_available():
-                device = "mps"  
+                device = torch.device("mps")  
             elif torch.cuda.is_available():
-                device = "cuda:0"
+                device = torch.device("cuda:0")
             else: 
-                device = "cpu"
+                device = torch.device("cpu")
             model = torch.load(cache_path, map_location=device, weights_only=False)
         elif backend == "tensorflow":
             model = tf.keras.models.load_model(cache_path, compile=False)

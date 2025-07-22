@@ -19,11 +19,11 @@ os.environ['CUDA_VISIBLE_DEVICES'] = GPU_N
 
 def test_cs_vae():
     if torch.backends.mps.is_available():
-        device = "mps"  
+        device = torch.device("mps")  
     elif torch.cuda.is_available():
-        device = "cuda:0"
+        device = torch.device("cuda:0")
     else: 
-        device = "cpu"
+        device = torch.device("cpu")
 
     # Build data and mlmodel
     data_name = "adult"
@@ -60,11 +60,11 @@ def test_variational_autoencoder():
     model = MLModelCatalog(data, "ann", backend="pytorch")
 
     if torch.backends.mps.is_available():
-        device = "mps"  
+        device = torch.device("mps")  
     elif torch.cuda.is_available():
-        device = "cuda:0"
+        device = torch.device("cuda:0")
     else: 
-        device = "cpu"
+        device = torch.device("cpu")
     test_input = np.zeros((1, 13))
     test_input = torch.Tensor(test_input).to(device)
 
@@ -94,11 +94,11 @@ def test_variational_autoencoder_length():
     model = MLModelCatalog(data, "ann", backend="pytorch")
 
     if torch.backends.mps.is_available():
-        device = "mps"  
+        device = torch.device("mps")  
     elif torch.cuda.is_available():
-        device = "cuda:0"
+        device = torch.device("cuda:0")
     else: 
-        device = "cpu"
+        device = torch.device("cpu")
     test_input = np.zeros((1, 13))
     test_input = torch.Tensor(test_input).to(device)
 

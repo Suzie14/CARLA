@@ -151,11 +151,11 @@ class Revise(RecourseMethod):
     def get_counterfactuals(self, factuals: pd.DataFrame) -> pd.DataFrame:
         start_time = time.time()
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
         factuals = self._mlmodel.get_ordered_features(factuals)
 
         # pay attention to categorical features

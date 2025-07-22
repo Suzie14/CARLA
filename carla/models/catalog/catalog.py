@@ -253,11 +253,11 @@ class MLModelCatalog(MLModel):
 
             # Keep model and input on the same device
             if torch.backends.mps.is_available():
-                device = "mps"  
+                device = torch.device("mps")  
             elif torch.cuda.is_available():
-                device = "cuda:0"
+                device = torch.device("cuda:0")
             else: 
-                device = "cpu"
+                device = torch.device("cpu")
             self._model = self._model.to(device)
 
             if isinstance(x, pd.DataFrame):

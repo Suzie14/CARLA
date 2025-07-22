@@ -191,11 +191,11 @@ class CLUE(BaseNet):
         self.prob_BNN = prob_BNN
         # self.cuda = cuda
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
         self.device = device
         self.original_x = self.original_x.to(self.device)
             # self.z_init = self.z_init.cuda()

@@ -165,11 +165,11 @@ class DataFrameDataset(Dataset):
     def __init__(self, x: pd.DataFrame, y: pd.DataFrame):
         # PyTorch
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
         self.X_train = torch.tensor(x.to_numpy(), dtype=torch.float32).to(device)
         self.Y_train = torch.tensor(y.to_numpy()).to(device)
 
@@ -191,11 +191,11 @@ def _training_torch(
 
     # Use GPU is available
     if torch.backends.mps.is_available():
-        device = "mps"  
+        device = torch.device("mps")  
     elif torch.cuda.is_available():
-        device = "cuda:0"
+        device = torch.device("cuda:0")
     else: 
-        device = "cpu"
+        device = torch.device("cpu")
     model = model.to(device)
 
     # define the loss

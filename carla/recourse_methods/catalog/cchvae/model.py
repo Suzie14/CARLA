@@ -179,11 +179,11 @@ class CCHVAE(RecourseMethod):
         self, step: int, factual: torch.Tensor, cat_features_indices: List
     ) -> pd.DataFrame:
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
 
         # init step size for growing the sphere
         low = 0

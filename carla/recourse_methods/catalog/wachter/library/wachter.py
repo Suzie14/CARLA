@@ -69,20 +69,21 @@ def wachter_recourse(
     Counterfactual example as np.ndarray
     """
     if torch.backends.mps.is_available():
-        device = "mps"  
+        device = torch.device("mps")  
     elif torch.cuda.is_available():
-        device = "cuda:0"
+        device = torch.device("cuda:0")
     else: 
-        device = "cpu"
+        device = torch.device("cpu")
     # returns counterfactual instance
     torch.manual_seed(0)
 
     if feature_costs is not None:
-        feature_costs = torch.from_numpy(feature_costs).float().to(device)
+        print(feature_costs)
+        feature_costs = torch.from_numpy(feature_costs).to(device=device, dtype=torch.float32)
 
-    x = torch.from_numpy(x).float().to(device)
-    y_target = torch.tensor(y_target).float().to(device)
-    lamb = torch.tensor(lambda_param).float().to(device)
+    x = torch.from_numpy(x).to(device=device, dtype=torch.float32)
+    y_target = torch.tensor(y_target).to(device=device, dtype=torch.float32)
+    lamb = torch.tensor(lambda_param).to(device=device, dtype=torch.float32)
     # x_new is used for gradient search in optimizing process
     x_new = Variable(x.clone(), requires_grad=True)
     # x_new_enc is a copy of x_new with reconstructed encoding constraints of x_new

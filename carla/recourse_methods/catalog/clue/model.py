@@ -150,11 +150,11 @@ class Clue(RecourseMethod):
         # Authors say: 'For automatic explainer generation'
         flat_vae_bools = False
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
         vae = VAE_gauss_cat_net(
             self._input_dimension,
             self._width,

@@ -69,11 +69,11 @@ class VariationalAutoencoder(nn.Module):
         )
 
         if torch.backends.mps.is_available():
-            device = "mps"  
+            device = torch.device("mps")  
         elif torch.cuda.is_available():
-            device = "cuda:0"
+            device = torch.device("cuda:0")
         else: 
-            device = "cpu"
+            device = torch.device("cpu")
 
         self.device = device
         self.to(self.device)
