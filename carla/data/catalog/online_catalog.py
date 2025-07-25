@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from carla.data.catalog import DataCatalog
 from carla.data.load_catalog import load
@@ -53,7 +53,41 @@ class OnlineCatalog(DataCatalog):
     @property
     def immutables(self) -> List[str]:
         return self.catalog["immutable"]
+    
+    @property
+    def mutables(self)-> List[str]:
+        return list(set(self.categorical + self.continuous) - set(self.immutables))
 
     @property
     def target(self) -> str:
         return self.catalog["target"]
+    
+    def add_immutables(self, new_immutables: Union[str, List[str]]) -> None:
+        """
+        Adds new immutable features to the catalog.
+
+        Parameters
+        ----------
+        new_immutables : str or List[str]
+            The feature(s) to be added as immutable.
+        """
+        if isinstance(new_immutables, str):
+            new_immutables = [new_immutables]
+
+        self.catalog["immutable"] = list(set(self.catalog["immutable"] + new_immutables))
+
+    def remove_immutables(self, to_remove: Union[str, List[str]]) -> None:
+        """
+        Removes features from the immutable list in the catalog.
+
+        Parameters
+        ----------
+        to_remove : str or List[str]
+            The feature(s) to be removed from immutable.
+        """
+        if isinstance(to_remove, str):
+            to_remove = [to_remove]
+
+        self.catalog["immutable"] = [
+            feature for feature in self.catalog["immutable"] if feature not in to_remove
+        ]
